@@ -1,12 +1,12 @@
 import asyncio
 import os
-from dotenv import load_dotenv
 from telebot.async_telebot import AsyncTeleBot
 from telebot import types
+from dotenv import load_dotenv
+load_dotenv("Bot.env")
 
-load_dotenv()
-Bot_token = os.environ.get("Key")
-Myself = os.environ.get("ID")
+Bot_token = str(os.getenv("Key"))
+Myself = os.getenv("ID")
 bot = AsyncTeleBot(Bot_token)
 
 @bot.message_handler(commands=["start"])
