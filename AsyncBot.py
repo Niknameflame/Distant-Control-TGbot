@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv("Bot.env")
 
 Bot_token = str(os.getenv("Key"))
-Myself = os.getenv("ID")
+Myself = int(os.getenv("ID"))
 bot = AsyncTeleBot(Bot_token)
 
 @bot.message_handler(commands=["start"])
@@ -29,7 +29,7 @@ async def Commands(message: types.Message):
     if message.from_user.id == Myself:
         if message.text == "Выключение пк🚫":
             await bot.reply_to(message, "Выключение ПК...")
-            os.system("shutdown /s")
+            os.system("shutdown /s /f /t 0")
         else:
             await bot.reply_to(message, "Что-то не так...")
 
