@@ -20,3 +20,11 @@ def TakeScreenshot():
     path = "Screen.png"
     gui.screenshot(path)
     return path
+
+def LaunchApp():
+    
+    return
+
+def LaunchSite():
+    
+    return
