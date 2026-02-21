@@ -18,18 +18,15 @@ FunctionsList = {
 
 @bot.message_handler(commands=["start"])
 async def AlreadyConnected(message):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    TestFunc1 = types.KeyboardButton("Lock pc🔄")
-    TestFunc2 = types.KeyboardButton("Take screenshot📺")
-    TestFunc3 = types.KeyboardButton("Launch App📂")
-    TestFunc4 = types.KeyboardButton("Launch Site🌐")
-    TestFunc5 = types.KeyboardButton("Shutdown pc🚫")
-    markup.row(TestFunc1,TestFunc2)
-    markup.row(TestFunc3,TestFunc4)
-    markup.row(TestFunc5)
-
+    markup = types.InlineKeyboardMarkup()
+    Btn1 = types.InlineKeyboardButton("Lock pc🔄", callback_data="cmd")
+    Btn2 = types.InlineKeyboardButton("Take screenshot📺", callback_data="cmd")
+    Btn3 = types.InlineKeyboardButton("Launch App📂", callback_data="cmd")
+    Btn4 = types.InlineKeyboardButton("Launch Site🌐", callback_data="cmd")
+    Btn5 = types.InlineKeyboardButton("Shutdown pc🚫", callback_data="cmd")
+    markup.add(Btn1,Btn2,Btn3,Btn4,Btn5)
     if BotFunctional.Check(message.from_user.id):
-        await bot.send_message(message.chat.id,"Hello owner", reply_markup=markup)     
+        await bot.send_message(message.chat.id,"Hello mr. flame:", reply_markup=markup)     
     else:
         await bot.send_message(message.chat.id,"Sorry, bot created only for owner")
 

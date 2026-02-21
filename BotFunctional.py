@@ -4,6 +4,12 @@ from dotenv import load_dotenv
 load_dotenv("Bot.env")
 Myself = int(os.getenv("ID"))
 
+Apps = {
+    "Dota 2": "",
+    "Dota 2": "",
+    "Discord": ""
+}
+
 def Check(SendingID):
     if SendingID == Myself:
         return True
