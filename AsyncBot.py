@@ -19,36 +19,31 @@ FunctionsList = {
 @bot.message_handler(commands=["start"])
 async def AlreadyConnected(message):
     markup = types.InlineKeyboardMarkup()
-    Btn1 = types.InlineKeyboardButton("Lock pc🔄", callback_data="cmd")
-    Btn2 = types.InlineKeyboardButton("Take screenshot📺", callback_data="cmd")
-    Btn3 = types.InlineKeyboardButton("Launch App📂", callback_data="cmd")
-    Btn4 = types.InlineKeyboardButton("Launch Site🌐", callback_data="cmd")
-    Btn5 = types.InlineKeyboardButton("Shutdown pc🚫", callback_data="cmd")
+    Btn1 = types.InlineKeyboardButton("Lock pc🔄", callback_data="Lock pc🔄")
+    Btn2 = types.InlineKeyboardButton("Take screenshot📺", callback_data="Take screenshot📺")
+    Btn3 = types.InlineKeyboardButton("Launch App📂", callback_data="Launch App📂")
+    Btn4 = types.InlineKeyboardButton("Launch Site🌐", callback_data="Launch Site🌐")
+    Btn5 = types.InlineKeyboardButton("Shutdown pc🚫", callback_data="Shutdown pc🚫")
     markup.add(Btn1,Btn2,Btn3,Btn4,Btn5)
+
     if BotFunctional.Check(message.from_user.id):
-        await bot.send_message(message.chat.id,"Hello mr. flame:", reply_markup=markup)     
+        await bot.send_message(message.chat.id,"Hello mr. flame:", reply_markup=markup)  
+        await bot.delete_message(message.chat.id, message.message_id)   
     else:
         await bot.send_message(message.chat.id,"Sorry, bot created only for owner")
 
-@bot.message_handler(content_types="text")
-async def Commands(message: types.Message):
-    temp_msg = await bot.reply_to(message, "Check...")
-    if BotFunctional.Check(message.from_user.id):
-        await asyncio.sleep(1)
+@bot.callback_query_handler(func=lambda call: call.data)
+async def Commands(call: types.CallbackQuery):
+    if BotFunctional.Check:
+        Func_Info = FunctionsList[call.data]
+        await bot.edit_message_text(Func_Info["msg"],call.message.chat.id, call.message.message_id)
+        Result = Func_Info["func"]()
 
-        bot_function = FunctionsList[message.text]
-        await bot.edit_message_text(bot_function["msg"], message.chat.id, temp_msg.message_id)
-
-        result = bot_function["func"]()
-        if str(result).endswith(".png"):
-            with open(result, "rb") as photo:
-                await bot.send_photo(message.chat.id,photo)
-            os.remove(rf"D:\\Coding\\TelegramBot\\DistantControlBot\\{result}")
-
-        await asyncio.sleep(1)
-        await bot.delete_message(message.chat.id, temp_msg.message_id)
-    else:
-        await asyncio.sleep(0.5)
-        await bot.edit_message_text("You not owner.", message.chat.id, temp_msg.message_id)
+        if str(Result).endswith(".png"):
+            with open(Result, "rb") as photo:
+                await bot.send_photo(call.message.chat.id, photo)
+        os.remove(rf"D:\Coding\TelegramBot\DistantControlBot\{Result}")
+        await asyncio.sleep(1.5)
+        await bot.delete_message(call.message.chat.id,call.message.message_id)
 
 asyncio.run(bot.infinity_polling())
