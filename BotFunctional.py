@@ -1,17 +1,14 @@
 import os
 import pyautogui as gui
+import webbrowser
+from pathlib import Path
 from dotenv import load_dotenv
-load_dotenv("Bot.env")
+path = Path(__file__).resolve().parent
+load_dotenv(dotenv_path=path/"Bot.env")
 Myself = int(os.getenv("ID"))
 
-Apps = {
-    "Dota 2": "",
-    "Dota 2": "",
-    "Discord": ""
-}
-
 def Check(SendingID):
-    if SendingID == Myself:
+    if Myself == SendingID:
         return True
     else:
         return False
@@ -23,14 +20,10 @@ def LockPc():
     os.system("rundll32.exe user32.dll,LockWorkStation")
 
 def TakeScreenshot():
-    path = "Screen.png"
-    gui.screenshot(path)
-    return path
-
-def LaunchApp():
-    
-    return
+    photo = "Screen.png"
+    gui.screenshot(path/photo)
+    return photo
 
 def LaunchSite():
-    
+
     return
