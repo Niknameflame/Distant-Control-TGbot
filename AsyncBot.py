@@ -45,6 +45,7 @@ async def Commands(call: types.CallbackQuery):
             with open(image, "rb") as photo:
                 await bot.send_photo(call.message.chat.id, photo)
             os.remove(image)
+
     await bot.delete_message(call.message.chat.id,call.message.message_id)
 
 asyncio.run(bot.infinity_polling())
