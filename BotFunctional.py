@@ -24,6 +24,5 @@ def TakeScreenshot():
     gui.screenshot(path/photo)
     return photo
 
-def LaunchSite():
-
-    return
+def LaunchSite(url):
+    webbrowser.open_new_tab(url)
