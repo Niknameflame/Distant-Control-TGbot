@@ -9,43 +9,57 @@ from dotenv import load_dotenv
 path = Path(__file__).resolve().parent
 load_dotenv(dotenv_path=path/"Bot.env")
 
+YourInput = False
 bot = AsyncTeleBot(str(os.getenv("Key")))
 
 FunctionsList = {
-    "Shutdown pc🚫": {"msg": "Shutdown pc...", "func": BotFunctional.ShutdownPc},
-    "Lock pc🔄": {"msg": "Locking screen...", "func": BotFunctional.LockPc},
-    "Take screenshot📺": {"msg": "Taking screenshoot...", "func": BotFunctional.TakeScreenshot},
-    "Launch Site🌐": {"msg": "Launching site...", "func": BotFunctional.LaunchSite}
+    "shutdown": {"msg": "Shutdowning pc", "func": BotFunctional.ShutdownPc, "special": False},
+    "lock": {"msg": "Locking screen", "func": BotFunctional.LockPc, "special": False},
+    "screenshot": {"msg": "Screenshoting", "func": BotFunctional.TakeScreenshot, "special": False},
+    "site": {"msg": "Send url to open:", "func": BotFunctional.LaunchSite, "special": True},
 }
 
 @bot.message_handler(commands=["start"])
 async def AlreadyConnected(message):
     markup = types.InlineKeyboardMarkup()
-    Btn1 = types.InlineKeyboardButton("Lock pc🔄", callback_data="Lock pc🔄")
-    Btn2 = types.InlineKeyboardButton("Take screenshot📺", callback_data="Take screenshot📺")
-    Btn3 = types.InlineKeyboardButton("Launch Site🌐", callback_data="Launch Site🌐")
-    Btn4 = types.InlineKeyboardButton("Shutdown pc🚫", callback_data="Shutdown pc🚫")
-    markup.add(Btn1,Btn2,Btn3,Btn4)
+    Btn1 = types.InlineKeyboardButton("Lock pc🔄", callback_data="lock")
+    Btn2 = types.InlineKeyboardButton("Take screenshot📺", callback_data="screenshot")
+    Btn3 = types.InlineKeyboardButton("Launch Site🌐", callback_data="site")
+    Btn4 = types.InlineKeyboardButton("Shutdown pc🚫", callback_data="shutdown")
+    markup.add(Btn1, Btn2, Btn3, Btn4)
 
     if BotFunctional.Check(message.from_user.id):
-        await bot.send_message(message.chat.id,"Hello mr. flame:", reply_markup=markup)  
-        await bot.delete_message(message.chat.id, message.message_id)   
+        await bot.send_message(message.chat.id, "Hello mr. flame:", reply_markup=markup)
+        await bot.delete_message(message.chat.id, message.message_id)
     else:
-        await bot.send_message(message.chat.id,"Sorry, bot created only for owner")
+        await bot.send_message(message.chat.id, "Sorry, bot created only for owner")
 
 @bot.callback_query_handler(func=lambda call: True)
 async def Commands(call: types.CallbackQuery):
     Func_Info = FunctionsList[call.data]
-    await bot.edit_message_text(Func_Info["msg"],call.message.chat.id, call.message.message_id)
-    Result = Func_Info["func"]()
-
-    if Result and path/Result:
-        image = path/Result
-        if isinstance(Result,str) and Result.endswith(".png"):
+    global YourInput
+    await bot.edit_message_text(Func_Info["msg"], call.message.chat.id, call.message.message_id)
+    if not Func_Info["special"]:
+        Result = Func_Info["func"]()
+        if isinstance(Result, str) and Result.endswith(".png"):
+            image = path / Result
             with open(image, "rb") as photo:
                 await bot.send_photo(call.message.chat.id, photo)
             os.remove(image)
+        await bot.delete_message(call.message.chat.id, call.message.message_id)
+    else:
+        if not YourInput:
+            YourInput = True
 
-    await bot.delete_message(call.message.chat.id,call.message.message_id)
+@bot.message_handler()
+async def SendText(message: types.Message):
+    global YourInput
+    if YourInput and str(message.text):
+        if BotFunctional.Check(message.from_user.id):
+            YourInput = False
+            await bot.reply_to(message, "Opening url")
+            BotFunctional.LaunchSite(str(message.text))
+            await asyncio.sleep(1)
+            await bot.delete_message(message.chat.id,message.message_id)
 
 asyncio.run(bot.infinity_polling())
